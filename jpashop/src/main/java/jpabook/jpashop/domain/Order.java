@@ -15,7 +15,8 @@ import java.util.List;
 @Table(name = "orders")
 @Getter @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order {
+public class
+Order {
 
     @Id @GeneratedValue
     @Column(name = "order_id")
