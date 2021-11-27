@@ -4,3 +4,5 @@
 - jpashop : 웹 애플케이션, API개발, 
 
 - spring_data_jpa : springDataJpa 학습
+
+- querydsl : querydsl과 JPA, Spring Data JPA 활용해보기
