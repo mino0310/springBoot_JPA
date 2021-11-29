@@ -38,8 +38,8 @@ test {
 }
 
 //querydsl 추가
-def querydslDir = 'src/main/generated'
-//def querydslDir = "$buildDir/generated/querydsl"
+//def querydslDir = 'src/main/generated'
+def querydslDir = "$buildDir/generated/querydsl"
 
 querydsl {
 	library = "com.querydsl:querydsl-apt"
