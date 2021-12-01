@@ -233,7 +233,7 @@ public class QuerydslBasicTest {
     public void join() {
         List<Member> result = queryFactory
                 .selectFrom(member)
-                .join(member.team, team)
+                .join(member.team, team) // 이렇게 하면은 sql 로 변환되는 과정에서 id 값으로 조인 조건을 on으로 걸어서 넣어줌. jpql 은 안 해줌
                 .where(team.name.eq("teamA"))
                 .fetch();
 
@@ -242,6 +242,10 @@ public class QuerydslBasicTest {
                 .containsExactly("member1", "member2");
     }
 
+    /**
+     * 세타 조인
+     * 회원의 이름과 팀 이름이 같은 회원 조회
+     */
     @Test
     public void theta_join() {
         em.persist(new Member("teamA"));
@@ -257,6 +261,44 @@ public class QuerydslBasicTest {
         assertThat(result)
                 .extracting("username")
                 .containsExactly("teamA", "teamB");
+    }
+
+    /**
+     * 회원과 팀을 조인하면서, 팀 이름이 teamA인 것만 조인! 회원은 모드 조회
+     * jpql: select m, t from Member m left join m.team t on t.name = 'teamA'
+     */
+    @Test
+    public void join_on_filtering() {
+        List<Tuple> result = queryFactory
+                .select(member, team)
+                .from(member)
+                .leftJoin(member.team, team).on(team.name.eq("teamA"))
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
+    }
+
+    /**
+     * 연관관계 없는 엔티티 외부 조인
+     * 회원의 이름과 팀  이름이 같은 대상 외부 조인
+     */
+    @Test
+    public void join_on_no_relation() {
+        em.persist(new Member("teamA"));
+        em.persist(new Member("teamB"));
+        em.persist(new Member("teamC"));
+
+        List<Tuple> result = queryFactory
+                .select(member, team, member.username, member.age, team.name)
+                .from(member)
+                .join(team).on(member.username.eq(team.name)) // 연관관계가 있게 설정되어있지만, 이 순간에는 연관관계가 없다고 가정한 상태임.
+                .fetch();
+
+        for (Tuple tuple : result) {
+            System.out.println("tuple = " + tuple);
+        }
 
     }
 }
